@@ -7,20 +7,37 @@ const {authentication}=require("./middlewares/authenctication.js")
 const dbConnect=require("./config/dbConnect");
 dbConnect();
 
+const cloudConnect=require("./config/cloudinaryConnect.js");
+cloudConnect();
 
+//middleware for cookie
 const cookies = require("cookie-parser");
 app.use(cookies())
 
 require("dotenv").config();
-
-
+const cloudinary=require("cloudinary").v2;
 
 const {createTask, getTasks, updateTask, deleteTask}=require("./controllers/task")
 const {createUser, loginUser, loggedOut}=require("./controllers/auth")
-const{DeleteUser}=require("./controllers/userDelete")
+const{DeleteUser,adminUserDelete}=require("./controllers/userDelete")
+//cloudinary route
+const{UploadFile}=require("./controllers/fileUploads.js")
+
+//cloudinary connection
+
+const fileupload=require("express-fileupload");
+
+app.use(fileupload({
+    tempFileDir:"/temp",
+    useTempFiles:true
+})
+
+)
 
 
 
+//cloudinary route
+app.post("/file",UploadFile);
 //auth Routes
 // const {authRoutes}=require("./routes/authRoutes.js");
 // app.use("/chatapp/task",authRoutes);
@@ -36,7 +53,14 @@ app.post("/task",authentication,createTask);
 app.get("/",authentication,getTasks)
 app.put("/task/:id" ,authentication,updateTask)
 app.delete("/task/:id",authentication,deleteTask)
+
+//User Deltetion
 app.delete("/deluser",authentication,DeleteUser);
+app.delete("/delbyadmin/:id",authentication,adminUserDelete)
+
+
+
+
 
 
 

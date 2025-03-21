@@ -6,9 +6,10 @@ require("dotenv").config();
 exports.createUser=async(req,res)=>{
 
 try{
-    const {email,password}=req.body; //get email and id from body
+    const {email,password,position}=req.body; //get email and id from body
+    
 
-    if(!email || !password){   //checking email and password present or not
+    if(!email || !password || !position){   //checking email and password present or not
         return res.status(400).json({
              sucess:false,
              message:"Please Enter all data",   
@@ -17,6 +18,18 @@ try{
     }
 
     const is_exist=await registerSchema.findOne({email}) //find user already present or mot for avoiding duplications
+   if(position=="admin"){
+    const exist=await registerSchema.findOne({position:{$eq:"admin"}},{skip:1}) || false
+    console.log(exist)
+
+    // console.log(exist);
+    if(exist){
+        return res.status(400).json({
+            message:"Kindly Enter Right position"
+        })
+    }
+   }
+    
 
     if(is_exist){
       return res.status(404).json({
@@ -26,7 +39,7 @@ try{
     }
 
     const hashedPassword= await bcrypt.hash(password,10); //convert a password into hash
-    const response=await registerSchema.create({email,password:hashedPassword}); //store a hash password as a password 
+    const response=await registerSchema.create({email,password:hashedPassword,position}); //store a hash password as a password 
 
     return res.status(200).json({
         sucess:true,
@@ -60,7 +73,8 @@ exports.loginUser=async(req,res)=>{
 
 
                 email:email,
-                _id:exist_data._id
+                _id:exist_data._id,
+                position:exist_data.position
 
 
             },process.env.JWT_SECRECT); //we pass email,and unique id  and our secret key 

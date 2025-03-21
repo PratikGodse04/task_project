@@ -11,6 +11,11 @@ const registerSchema=new mongoose.Schema({
         type:String,
         required:true
     },
+    position:{
+               type:String,
+               enum:["admin","user"],
+               default:"user"
+    },
     tasks: [
         //  it wll be storing array 
         {
