@@ -2,7 +2,7 @@ const express=require('express');
 const app=express();
 
 app.use(express.json())
-const {authentication}=require("./middlewares/authenctication.js")
+
 
 const dbConnect=require("./config/dbConnect");
 dbConnect();
@@ -16,6 +16,8 @@ app.use(cookies())
 
 require("dotenv").config();
 const cloudinary=require("cloudinary").v2;
+const {authentication,}=require("./middlewares/authenctication.js")
+const {isAdmin}=require("./middlewares/authorization.js")
 
 const {createTask, getTasks, updateTask, deleteTask}=require("./controllers/task")
 const {createUser, loginUser, loggedOut}=require("./controllers/auth")
@@ -34,7 +36,7 @@ app.use(fileupload({
 
 )
 
-
+//routes start here 
 
 //cloudinary route
 app.post("/file",UploadFile);
@@ -56,11 +58,11 @@ app.delete("/task/:id",authentication,deleteTask)
 
 //User Deltetion
 app.delete("/deluser",authentication,DeleteUser);
-app.delete("/delbyadmin/:id",authentication,adminUserDelete)
+app.delete("/delbyadmin/:id",authentication,isAdmin,adminUserDelete)
 
 
 
-
+// routers end here 
 
 
 

@@ -11,8 +11,12 @@ const user_id=req.payload._id
 
 try{
 
+   
+
 const res1= await userSchema.findByIdAndDelete(user_id);
+
 const res2= await taskSchema.deleteMany({user_id:{$eq:user_id}})
+
 
 if(res1 && res2){
     return res.status(200).json({
@@ -34,26 +38,37 @@ catch(err){
 }
 
 exports.adminUserDelete=async(req,res)=>{
-
-    const id=req.payload._id;
-
+       
+    const id=req.params.id
+    console.log(id)
     try{
-        const response=await registerSchema.findById(id);
+       
+      console.log("Execution Start");
 
-        if(response.position!=="admin"){
-            return res.status(400).json({
-                sucess:false,
-                message:"You Do not have permission to delete other user"
-            })
-        }
-         const id1=req.params.id
-         console.log(id1)
-        const res1=await registerSchema.findByIdAndDelete(id1);
+      const res3=await userSchema.findById(id);
 
-        if(res1){
+      if(!res3 || null){
+          return res.status(404).json({
+              sucess:false,
+              message:"User no present In database For this id"
+          })
+      }
+     
+       
+        const res1=await userSchema.findByIdAndDelete(id);
+        console.log(res1)
+        const res2=await taskSchema.deleteMany({user_id:{$eq:id}})
+        console.log(res2)
+
+        if( res1 && res2){
             return res.status(200).json({
                 sucess:true,
                 message:"User Delete Sucessfully"
+            })
+        }
+        else{
+            return res.status(400).json({
+                message:"Internal Error occured while deleting user "
             })
         }
         

@@ -8,10 +8,9 @@ exports.createTask=async(req,res)=>{
     const task_name=req.body.task_name;
     const task_desc=req.body.task_desc;
     const task_status=req.body.task_status;
-   const task_date1=new Date();
+   const task_date=new Date(Date.now());
 
-    const task_date=`${task_date1.getDate()}:${task_date1.getMonth()}:${task_date1.getFullYear()}`;
-    console.log(task_date);
+   
     
 
     if(!task_name || !task_desc || !task_status){
